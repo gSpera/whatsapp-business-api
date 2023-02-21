@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -59,4 +60,37 @@ func (c *Client) SendPOSTRequest(endpoint string, body any) error {
 		return err.Error
 	}
 	return nil
+}
+
+func (c Client) SendGETRequest(endpoint string) (io.ReadCloser, error) {
+	return c.sendGETRequestWithoutBase(BASE_URL + endpoint)
+}
+
+func (c Client) sendGETRequestWithoutBase(url string) (io.ReadCloser, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("cannot create request: %w", err)
+	}
+
+	req.Header.Add("Authorization", "Bearer "+c.accessToken)
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := c.http.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error in request: %w", err)
+	}
+
+	if res.StatusCode != http.StatusOK {
+		decoder := json.NewDecoder(res.Body)
+		defer res.Body.Close()
+		var err ErrorWrapper
+		decodeErr := decoder.Decode(&err)
+		if decodeErr != nil {
+			return nil, fmt.Errorf("cannot decode error: %w", decodeErr)
+		}
+
+		return nil, err.Error
+	}
+
+	return res.Body, nil
 }

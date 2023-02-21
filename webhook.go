@@ -47,13 +47,17 @@ type WebhookMessage struct {
 	Timestamp int    `json:"timestamp,string"`
 	Type      string `json:"type"`
 
-	Identity struct {
+	Text *struct {
+		Body string `json:"body"`
+	} `json:"text,omitempty"`
+
+	Identity *struct {
 		// Acknowledged: Unkown Type
 		CreatedTimestamp string `json:"created_timestamp"`
 		Hash             string `json:"hash"`
-	} `json:"identity"`
+	} `json:"identity,omitempty"`
 
-	Context struct {
+	Context *struct {
 		ID                  string `json:"id"`
 		Forwarded           bool   `json:"forwarded"`
 		FrequentlyForwarded bool   `json:"frequently_forwarded"`
@@ -62,26 +66,26 @@ type WebhookMessage struct {
 			CatalogID         string `json:"catalog_id"`
 			ProductRetailerID string `json:"product_retailer_id"`
 		} `json:"referred_product"`
-	} `json:"context"`
+	} `json:"context,omitempty"`
 
-	Image struct {
+	Image *struct {
 		ID       string `json:"id"`
 		MimeType string `json:"mime_type"`
 		SHA256   string `json:"sha256"`
-	} `json:"image"`
+	} `json:"image,omitempty"`
 
-	Audio struct {
+	Audio *struct {
 		ID       string `json:"id"`
 		MimeType string `json:"mime_type"`
-	}
+	} `json:"audio,omitempty"`
 
-	Document struct {
+	Document *struct {
 		ID       string `json:"id"`
 		Caption  string `json:"caption"`
 		Filename string `json:"filename"`
 		MimeType string `json:"mime_type"`
 		SHA256   string `json:"sha256"`
-	}
+	} `json:"document,omitempty"`
 
 	Button struct {
 		Payload string `json:"payload"`
