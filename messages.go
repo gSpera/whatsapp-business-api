@@ -10,6 +10,32 @@ func (c *Client) SendMessage(phoneNumberID string, msg SendMessage) error {
 	return c.SendPOSTRequest(fmt.Sprintf("/%s/messages", phoneNumberID), msg)
 }
 
+// SendSimpleMessage is a wrapper around SendMessage, this way sending a simple text message is clearer
+func (c *Client) SendSimpleMessage(phoneNumberID string, to string, text string) error {
+	return c.SendMessage(phoneNumberID, SendMessage{
+		MessagingProduct: "whatsapp",
+		Type:             "text",
+		To:               to,
+
+		Text: &SendMessageText{
+			Body: text,
+		},
+	})
+}
+
+// SetMessageAsRead marks the message with ID msgID as read by the client
+func (c *Client) SetMessageAsRead(phoneNumberID string, msgID string) error {
+	return c.SendPOSTRequest(fmt.Sprintf("/%s/messages", phoneNumberID), struct {
+		MessagingProduct string `json:"messaging_product"`
+		Status           string `json:"status"`
+		MessageID        string `json:"message_id"`
+	}{
+		"whatsapp",
+		"read",
+		msgID,
+	})
+}
+
 type SendMessage struct {
 	MessagingProduct string                  `json:"messaging_product"`
 	Type             string                  `json:"type"`
